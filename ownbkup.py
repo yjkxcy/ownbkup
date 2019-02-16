@@ -1,3 +1,5 @@
+import os
+
 def comparefile(file1, file2):
     '''比较两个相同文件名的文件是否相同，根据文件最后修改日期和文件大小确定是否相同，返回True或Fales'''
     return True
