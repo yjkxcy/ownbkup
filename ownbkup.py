@@ -29,9 +29,20 @@ def renamefile(file, index):
     return os.path.join(path, newfilename)
 
 
+def getdatetimeoriginal(file):
+    '''返回EXIF信息的拍摄日期，日期格式为time.struct_time'''
+    with open(file, 'rb') as f:
+        tags = exifread.process_file(f, details=False, stop_tag='EXIF DateTimeOriginal', strict=True)
+    tmp = str(tags['EXIF DateTimeOriginal'])[:19]
+    return time.strptime(tmp, '%Y:%m:%d %H:%M:%S')
+
 def generatesubdir(file):
     '''根据EXIF信息或最后修改日期，生成子目录，如 “2019-02”'''
-    pass
+    try:
+        date = getdatetimeoriginal(file)
+    except KeyError:
+        date = time.localtime(os.stat(file).st_mtime)
+    return time.strftime('%Y-%m', date)
 
 
 def getsubpaths(path):
@@ -45,12 +56,15 @@ class Wildcards(object):
     def __init__(self):
         self.exts = ['jpeg', 'jpg', 'mov', 'mp4']
 
-    def appendext(self, newexts=[]):
-        self.exts += newexts
+    def appendext(self, newexts):
+        '''参数newexts为外加的扩展名元组或列表'''
+        for ext in newexts:
+            if ext not in self.exts:
+                self.exts.append(ext)
 
     def getwildcards(self):
+        '''返回扩展名通配符'''
         return ['*.' + ext for ext in self.exts]
-
 
 
 def backupfile(file, desdir):
@@ -65,10 +79,13 @@ def bkuppath(surpath, despath):
 
 def wildcardst():
     w = Wildcards()
-    w.appendext(['bmp', 'mpeg'])
+    ext = input('请输入需要增加的文件扩展名（以空格分隔）:')
+    t = []
+    t.extend(ext.split())
+    print(t)
+    w.appendext(t)
     for e in w.getwildcards():
         print(e)
-
 
 
 def renamefiletest():
@@ -80,9 +97,6 @@ def renamefiletest():
             print('new ', renamefile(file, index))
         except Exception as err:
             print(err)
-
-
-
 
 
 if __name__ == '__main__':
