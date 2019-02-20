@@ -3,6 +3,7 @@ import exifread
 
 
 def getdatetimeoriginal(file):
+    '''返回JPG文件EXIF信息中的拍摄日期'''
     with open(file, 'rb') as f:        # Open image file for reading (binary mode)
         tags = exifread.process_file(f, details=False, stop_tag='EXIF DateTimeOriginal')     # Return Exif tags
     return (tags['EXIF DateTimeOriginal'])
@@ -15,4 +16,4 @@ def getdatetimeoriginal(file):
 if __name__ == '__main__':
     file = "D:\\ownbkup\\IMG_20171023_095825.jpg"
     date = getdatetimeoriginal(file)
-    print(type(str(date)))
+    print(type(date))
