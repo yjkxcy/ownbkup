@@ -46,8 +46,22 @@ def generatesubdir(file):
 
 
 def getsubpaths(path):
-    '''返回path目录下的所以子目录'''
-    pass
+    '''返回path目录下的所有子目录'''
+    stack = []
+    stack.append(path)
+    while len(stack) != 0:
+        dirpath = stack.pop()
+        try:
+            filelist = os.listdir(dirpath)
+        except PermissionError as err:
+            print(err)
+            continue
+        else:
+            for filename in filelist:
+                fileabs = os.path.join(dirpath, filename)
+                if os .path.isdir(fileabs):
+                    stack.append(fileabs)
+                    yield fileabs
 
 
 class Wildcards(object):
@@ -98,6 +112,14 @@ def renamefiletest():
         except Exception as err:
             print(err)
 
+def getsubpathst():
+    srcpath = "d:\\201811newidea"
+    for p in getsubpaths(srcpath):
+        print(p)
+
+
 
 if __name__ == '__main__':
-    wildcardst()
+
+    getsubpathst()
+
