@@ -47,6 +47,7 @@ def generatesubdir(file):
 
 def getsubpaths(path):
     '''返回path目录下的所有子目录'''
+    yield path
     stack = []
     stack.append(path)
     while len(stack) != 0:
@@ -81,12 +82,29 @@ class Wildcards(object):
         return ['*.' + ext for ext in self.exts]
 
 
-def backupfile(file, desdir):
+def backupfile(srcfile, desdir):
     '''备份单个文件到指定的目录下'''
-    pass
+    despath = os.path.join(desdir, generatesubdir(srcfile))
+    #print(despath)
+    if not os.path.isdir(despath):
+        os.mkdir(despath)
+    desfile = os.path.join(despath, os.path.basename(srcfile))
+    #print(srcfile, desfile)
+    index = 0     # 重命名时的参考编号
+    while os.path.isfile(desfile):
+        index += 1
+        if comparefile(srcfile, desfile):
+            print('{} is Exist, it is {}'.format(srcfile, desfile))
+            #os.remove(srcfile)
+            break
+        else:
+            desfile = renamefile(desfile, index)
+    else:
+        shutil.copy2(srcfile, desfile)
+        print('{} is backup OK, it is {}'.format(srcfile, desfile))
 
 
-def bkuppath(surpath, despath):
+def bkuppath(srcpath, despath):
     '''备份源目录下符合要求的文件到目的目录下相应子目录内'''
     pass
 
@@ -113,13 +131,25 @@ def renamefiletest():
             print(err)
 
 def getsubpathst():
-    srcpath = "d:\\201811newidea"
+    srcpath = "C:\\"  # 201811newidea
     for p in getsubpaths(srcpath):
         print(p)
 
 
+def generatesubdirt():
+    path = "D:\\20170706apple6"
+    for dir in getsubpaths(path):
+        for file in glob.glob(os.path.join(dir, '*.mov')):
+            print(generatesubdir(file))
+
+
+def backupfilet():
+    despath = "D:\\backup\\tb"
+    path = "D:\\backup\photos\\2016-02"
+    for dir in getsubpaths(path):
+        for file in glob.glob(os.path.join(dir,   '*.txt')):
+            backupfile(file, despath)
 
 if __name__ == '__main__':
-
-    getsubpathst()
+    backupfilet()
 
