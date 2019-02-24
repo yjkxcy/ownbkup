@@ -65,21 +65,25 @@ def getsubpaths(path):
                     yield fileabs
 
 
-class Wildcards(object):
-    '''根据扩展名生成glob所需的通配符，如‘*.jpg’，返回通配符列表'''
+def generatewildcard(extlist):
+    '''根据扩展名生成glob所需的通配符，如‘*.[JjMm][PpOo][GgV4v]’'''
+    allext = [s.lower()  for s in extlist] + [s.upper() for s in extlist]
+    wlist = [''.join(set(x)) for x in zip(*allext)]
+    print(wlist)
+    return ("*." + "[{}]" * len(wlist)).format(*wlist)
 
-    def __init__(self):
-        self.exts = ['jpeg', 'jpg', 'mov', 'mp4']
+def wildcards(exts):
+    lenlist = [len(ext) for ext in exts]
+    lenmin = min(lenlist)
+    lenmax = max(lenlist) + 1
+    extdict = {}
+    for i in range(lenmin, lenmax):  # 扩展名长度2-4个字符
+        extdict[i] = [ ex for ex in exts if len(ex) == i]
+    return [generatewildcard(extdict[key]) for key in extdict]
 
-    def appendext(self, newexts):
-        '''参数newexts为外加的扩展名元组或列表'''
-        for ext in newexts:
-            if ext not in self.exts:
-                self.exts.append(ext)
 
-    def getwildcards(self):
-        '''返回扩展名通配符'''
-        return ['*.' + ext for ext in self.exts]
+
+
 
 
 def backupfile(srcfile, desdir):
@@ -109,15 +113,18 @@ def bkuppath(srcpath, despath):
     pass
 
 
+
+def generatewildcardt():
+    extlist = ['jpg', 'MOV', 'mp4'] #['rm']  #['jpeg', 'mpeg']
+    print(generatewildcard(extlist))
+
+
 def wildcardst():
-    w = Wildcards()
-    ext = input('请输入需要增加的文件扩展名（以空格分隔）:')
+    exts = input('请输入需要增加的文件扩展名（以空格分隔）:')
     t = []
-    t.extend(ext.split())
+    t.extend(exts.split())
     print(t)
-    w.appendext(t)
-    for e in w.getwildcards():
-        print(e)
+    print(wildcards(t))
 
 
 def renamefiletest():
@@ -151,5 +158,6 @@ def backupfilet():
             backupfile(file, despath)
 
 if __name__ == '__main__':
-    backupfilet()
+    wildcardst()
+
 
