@@ -36,6 +36,7 @@ def getdatetimeoriginal(file):
     tmp = str(tags['EXIF DateTimeOriginal'])[:19]
     return time.strptime(tmp, '%Y:%m:%d %H:%M:%S')
 
+
 def generatesubdir(file):
     '''根据EXIF信息或最后修改日期，生成子目录，如 “2019-02”'''
     try:
@@ -60,17 +61,18 @@ def getsubpaths(path):
         else:
             for filename in filelist:
                 fileabs = os.path.join(dirpath, filename)
-                if os .path.isdir(fileabs):
+                if os.path.isdir(fileabs):
                     stack.append(fileabs)
                     yield fileabs
 
 
 def generatewildcard(extlist):
     '''根据扩展名生成glob所需的通配符，如‘*.[JjMm][PpOo][GgV4v]’'''
-    allext = [s.lower()  for s in extlist] + [s.upper() for s in extlist]
+    allext = [s.lower() for s in extlist] + [s.upper() for s in extlist]
     wlist = [''.join(set(x)) for x in zip(*allext)]
-    print(wlist)
+    #print(wlist)
     return ("*." + "[{}]" * len(wlist)).format(*wlist)
+
 
 def wildcards(exts):
     lenlist = [len(ext) for ext in exts]
@@ -78,44 +80,43 @@ def wildcards(exts):
     lenmax = max(lenlist) + 1
     extdict = {}
     for i in range(lenmin, lenmax):  # 扩展名长度2-4个字符
-        extdict[i] = [ ex for ex in exts if len(ex) == i]
+        extdict[i] = [ex for ex in exts if len(ex) == i]
     return [generatewildcard(extdict[key]) for key in extdict]
-
-
-
-
 
 
 def backupfile(srcfile, desdir):
     '''备份单个文件到指定的目录下'''
     despath = os.path.join(desdir, generatesubdir(srcfile))
-    #print(despath)
+    # print(despath)
     if not os.path.isdir(despath):
         os.mkdir(despath)
     desfile = os.path.join(despath, os.path.basename(srcfile))
-    #print(srcfile, desfile)
-    index = 0     # 重命名时的参考编号
+    # print(srcfile, desfile)
+    index = 0  # 重命名时的参考编号
     while os.path.isfile(desfile):
         index += 1
         if comparefile(srcfile, desfile):
             print('{} is Exist, it is {}'.format(srcfile, desfile))
-            #os.remove(srcfile)
+            # os.remove(srcfile)
             break
         else:
             desfile = renamefile(desfile, index)
     else:
-        shutil.copy2(srcfile, desfile)
+        #shutil.copy2(srcfile, desfile)
         print('{} is backup OK, it is {}'.format(srcfile, desfile))
 
 
-def bkuppath(srcpath, despath):
-    '''备份源目录下符合要求的文件到目的目录下相应子目录内'''
-    pass
-
+def bkuppath(srcpath, despath, fileextlist):
+    '''备份源目录下指定扩展名的文件到目的目录下相应子目录内'''
+    wildcardlist = wildcards(fileextlist)
+    for wil in wildcardlist:
+        for subdir in getsubpaths(srcpath):
+            for srcfile in glob.glob(os.path.join(subdir, wil)):
+                backupfile(srcfile, despath)
 
 
 def generatewildcardt():
-    extlist = ['jpg', 'MOV', 'mp4'] #['rm']  #['jpeg', 'mpeg']
+    extlist = ['jpg', 'MOV', 'mp4']  # ['rm']  #['jpeg', 'mpeg']
     print(generatewildcard(extlist))
 
 
@@ -137,6 +138,7 @@ def renamefiletest():
         except Exception as err:
             print(err)
 
+
 def getsubpathst():
     srcpath = "C:\\"  # 201811newidea
     for p in getsubpaths(srcpath):
@@ -154,10 +156,24 @@ def backupfilet():
     despath = "D:\\backup\\tb"
     path = "D:\\backup\photos\\2016-02"
     for dir in getsubpaths(path):
-        for file in glob.glob(os.path.join(dir,   '*.txt')):
+        for file in glob.glob(os.path.join(dir, '*.txt')):
             backupfile(file, despath)
 
+
+def main():
+    srcpath = os.getcwd()
+    despath = os.path.abspath(os.path.join(os.path.dirname(os.getcwd()), 'backup\photos'))
+    if not os.path.isdir(despath):
+        os.mkdir(despath)
+    fileextlist = ['jpg', 'jpeg', 'mov', 'mp4']
+    msg = ('请输入需要增加的文件扩展名（以空格分隔，默认' + ' {} '* len(fileextlist) + ')').format(*fileextlist)
+    strtmp = input(msg)
+    fileextlist.extend(strtmp.split())
+    print(fileextlist)
+    print('srcpath = {}, despath = {}, fileextlist = {}'.format(srcpath, despath, fileextlist))
+    input('按回车健继续...')
+    bkuppath(srcpath, despath, fileextlist)
+
+
 if __name__ == '__main__':
-    wildcardst()
-
-
+    main()
