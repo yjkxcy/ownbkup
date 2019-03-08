@@ -160,20 +160,20 @@ def backupfilet():
             backupfile(file, despath)
 
 
-def main():
+def mainforwin():
     srcpath = os.getcwd()
-    despath = os.path.abspath(os.path.join(os.path.dirname(os.getcwd()), 'backup\photos'))
+    despath = os.path.join(os.path.abspath(os.path.dirname(srcpath)), 'backup\photos')
     if not os.path.isdir(despath):
         os.mkdir(despath)
     fileextlist = ['jpg', 'jpeg', 'mov', 'mp4']
     msg = ('请输入需要增加的文件扩展名（以空格分隔，默认' + ' {} '* len(fileextlist) + ')').format(*fileextlist)
     strtmp = input(msg)
     fileextlist.extend(strtmp.split())
-    print(fileextlist)
+    #print(fileextlist)
     print('srcpath = {}, despath = {}, fileextlist = {}'.format(srcpath, despath, fileextlist))
     input('按回车健继续...')
     bkuppath(srcpath, despath, fileextlist)
 
 
 if __name__ == '__main__':
-    main()
+    mainforwin()
