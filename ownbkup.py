@@ -9,7 +9,7 @@ import platform
 
 def comparefile(file1, file2):
     '''比较两个相同文件名的文件是否相同，根据文件最后修改日期和文件大小确定是否相同，返回True或Fales'''
-    if os.stat(file1).st_mtime == os.stat(file2).st_mtime and os.stat(file1).st_size == os.stat(file2).st_size:
+    if os.stat(file1).st_size == os.stat(file2).st_size:
         return True
     else:
         return False
@@ -103,7 +103,7 @@ def backupfile(srcfile, desdir):
         else:
             desfile = renamefile(desfile, index)
     else:
-        #shutil.copy2(srcfile, desfile)
+        shutil.copy2(srcfile, desfile)
         print('{} is backup OK, it is {}'.format(srcfile, desfile))
 
 
@@ -177,8 +177,11 @@ def mainforwin():
 
 
 def mainforlinux():
-    srcpath = os.getcwd()
-    despath = os.path.join(os.path.abspath(os.path.dirname(srcpath)), 'backup\photos')
+    import sys
+    reload(sys)
+    sys.setdefaultencoding('utf8')
+    srcpath = os.path.abspath(os.path.dirname(os.getcwd()))
+    despath = os.path.join(os.path.abspath(os.path.dirname(srcpath)), 'backuppath/photos')
     fileextlist = ['jpg', 'jpeg', 'mov', 'mp4']
     msg = ('请输入需要增加的文件扩展名（以空格分隔，默认' + ' {} '* len(fileextlist) + ')').format(*fileextlist)
     strtmp = raw_input(msg)
@@ -199,6 +202,7 @@ if __name__ == '__main__':
         print('it is windows')
         #mainforwin()
     elif systemver == 'Linux':
-        print('it is linux')
+        #print('it is linux')
+        mainforlinux()
     else:
         print('不支持当前系统，windows下需python3，linux下需python2.7')
