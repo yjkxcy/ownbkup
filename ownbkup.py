@@ -4,6 +4,7 @@ import glob
 import shutil
 import time
 import re
+import platform
 
 
 def comparefile(file1, file2):
@@ -163,8 +164,6 @@ def backupfilet():
 def mainforwin():
     srcpath = os.getcwd()
     despath = os.path.join(os.path.abspath(os.path.dirname(srcpath)), 'backup\photos')
-    if not os.path.isdir(despath):
-        os.mkdir(despath)
     fileextlist = ['jpg', 'jpeg', 'mov', 'mp4']
     msg = ('请输入需要增加的文件扩展名（以空格分隔，默认' + ' {} '* len(fileextlist) + ')').format(*fileextlist)
     strtmp = input(msg)
@@ -172,8 +171,20 @@ def mainforwin():
     #print(fileextlist)
     print('srcpath = {}, despath = {}, fileextlist = {}'.format(srcpath, despath, fileextlist))
     input('按回车健继续...')
+    if not os.path.isdir(despath):
+        os.mkdir(despath)
     bkuppath(srcpath, despath, fileextlist)
 
 
 if __name__ == '__main__':
-    mainforwin()
+    systemver = platform.system()
+    print(systemver)
+    pythonver = platform.python_version()
+    print(pythonver)
+    if systemver == 'Windows':
+        print('it is windows')
+        mainforwin()
+    elif systemver == 'Linux':
+        print('it is linux')
+    else:
+        print('不支持当前系统，windows下需python3，linux下需python2.7')
