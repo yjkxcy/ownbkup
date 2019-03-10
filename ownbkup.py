@@ -176,6 +176,20 @@ def mainforwin():
     bkuppath(srcpath, despath, fileextlist)
 
 
+def mainforlinux():
+    srcpath = os.getcwd()
+    despath = os.path.join(os.path.abspath(os.path.dirname(srcpath)), 'backup\photos')
+    fileextlist = ['jpg', 'jpeg', 'mov', 'mp4']
+    msg = ('请输入需要增加的文件扩展名（以空格分隔，默认' + ' {} '* len(fileextlist) + ')').format(*fileextlist)
+    strtmp = raw_input(msg)
+    fileextlist.extend(strtmp.split())
+    #print(fileextlist)
+    print('srcpath = {}, despath = {}, fileextlist = {}'.format(srcpath, despath, fileextlist))
+    raw_input('按回车健继续...')
+    if not os.path.isdir(despath):
+        os.mkdir(despath)
+    bkuppath(srcpath, despath, fileextlist)
+
 if __name__ == '__main__':
     systemver = platform.system()
     print(systemver)
@@ -183,7 +197,7 @@ if __name__ == '__main__':
     print(pythonver)
     if systemver == 'Windows':
         print('it is windows')
-        mainforwin()
+        #mainforwin()
     elif systemver == 'Linux':
         print('it is linux')
     else:
