@@ -8,8 +8,10 @@ import platform
 
 
 def comparefile(file1, file2):
-    '''比较两个相同文件名的文件是否相同，根据文件最后修改日期和文件大小确定是否相同，返回True或Fales'''
-    if os.stat(file1).st_size == os.stat(file2).st_size:
+    '''比较两个相同文件名的文件是否相同，根据文件大小、MD5确定是否相同，返回True或Fales'''
+    if not os.stat(file1).st_size == os.stat(file2).st_size:
+        return False
+    elif os.system('md5sum {}'.format(file1)) == os.system('md5sum {}'.format(file2)):
         return True
     else:
         return False
@@ -91,7 +93,9 @@ def backupfile(srcfile, desdir):
     # print(despath)
     if not os.path.isdir(despath):
         os.mkdir(despath)
-    desfile = os.path.join(despath, os.path.basename(srcfile))
+    filename = os.path.basename(srcfile).lower()
+    #print(filename)
+    desfile = os.path.join(despath, filename)
     # print(srcfile, desfile)
     index = 0  # 重命名时的参考编号
     while os.path.isfile(desfile):
