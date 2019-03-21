@@ -7,11 +7,27 @@ import re
 import platform
 
 
+def getfilemd5(filename):
+    def read_chunks(fh):
+        fh.seek(0)
+        chunk = fh.read(8096)
+        while chunk:
+            yield chunk
+            chunk = fh.read(8096)
+        else:
+            fh.seek(0)
+    m = hashlib.md5()
+    with open(filename, 'rb') as fh:
+        for chunk in read_chunks(fh):
+            m.update(chunk)
+    return m.hexdigest()
+
+
 def comparefile(file1, file2):
     '''比较两个相同文件名的文件是否相同，根据文件大小、MD5确定是否相同，返回True或Fales'''
     if not os.stat(file1).st_size == os.stat(file2).st_size:
         return False
-    elif os.system('md5sum {}'.format(file1)) == os.system('md5sum {}'.format(file2)):
+    elif getfilemd5(file1) == getfilemd5(file1):
         return True
     else:
         return False
