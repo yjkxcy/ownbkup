@@ -5,6 +5,7 @@ import shutil
 import time
 import re
 import platform
+import hashlib
 
 
 def getfilemd5(filename):
@@ -94,6 +95,7 @@ def generatewildcard(extlist):
 
 
 def wildcards(exts):
+    '''根据不同长度的扩展名，生成相应规则的通配符，返回通配符的列表'''
     lenlist = [len(ext) for ext in exts]
     lenmin = min(lenlist)
     lenmax = max(lenlist) + 1
