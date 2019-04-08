@@ -1,12 +1,24 @@
+#coding:utf-8
 import argparse
 import os
 import sys
+try:
+    import exifread
+except ImportError:
+    print("导入EXIFREAD模块错误，请运行pip install exifread安装，或访问https://pypi.org/project/ExifRead/获得帮助")
 
+if sys.version[0] == "3":
+    raw_input = input
+if sys.getdefaultencoding() != "utf-8":
+    reload(sys)
+    sys.setdefaultencoding("utf-8")
+    
+    
 
-def askyesorno(info):
-    answer = input(info).lower()
+def askyesorno(info):   
+    answer =  raw_input(info).lower()
     while answer not in ["yes", "y", "no", "n"]:
-        answer = input(info).lower()
+        answer =  raw_input(info).lower()
     else:
         if answer in ["yes", "y"]:
             return(True)
